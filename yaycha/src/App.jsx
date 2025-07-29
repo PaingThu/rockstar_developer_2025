@@ -1,23 +1,5 @@
-function Item({content, name}){
-    return (
-        <li style={{padding: 10, borderBottom: "1px solid #ddd"}}>
-            {content} -<b>{name}</b>
-        </li>
-    )
-}
-
-function List({children}){
-    return <ul style={{
-        listStyle: "none",
-        padding: 0,
-        margin: 0,
-        border: "1px solid #ddd",
-        borderRadius: 8,
-        overflow: "hidden",
-    }}>
-        {children}
-    </ul>
-}
+import Item from "./Item";
+import List from "./List";
 
 export default function App() {
     return (
@@ -29,4 +11,4 @@ export default function App() {
             </List>
         </div>
     )
-}
+} 
