@@ -10,6 +10,14 @@ import {
 import App from "./App";
 import { deepPurple, grey } from "@mui/material/colors";
 import AppDrawer from "./components/AppDrawer";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import Template from "./Template";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Profile from "./pages/Profile";
+import Comments from "./pages/Comments";
+import Likes from "./pages/Likes";
 
 // App ၇ဲ့ data တွေကို Components တွေမှာ props အဖြစ်နဲ့ manually pass ပေးစ၇ာမလိုပဲနဲ့ Components မှာ အသုံးပြုနိုင်ဖို့အတွက် React ၇ဲ့ Context တစ်ခုကို ဖန်တီးပါတယ်။
 const AppContext = createContext();
@@ -27,6 +35,39 @@ const AppContext = createContext();
 export function useApp() {
     return useContext(AppContext);
 }
+
+const router = createBrowserRouter([
+    {
+        path: "/",
+        element: <Template />,
+        children: [
+            {
+                path: "/",
+                element: <Home />
+            },
+            {
+                path: "/login",
+                element: <Login />
+            },
+            {
+                path: "/register",
+                element: <Register />
+            },
+            {
+                path: "/profile/:id",
+                element: <Profile />
+            },
+            {
+                path: "/comments/:id",
+                element: <Comments />
+            },
+            {
+                path: "/likes/:id",
+                element: <Likes />
+            }
+        ]
+    }
+]);
 
 export default function ThemedApp(){
 
@@ -48,6 +89,7 @@ export default function ThemedApp(){
         return createTheme({
             palette: { 
                 mode,
+                primary: deepPurple,
                 banner: mode === "dark" ? grey[800] : grey[200],
                 text: {
                     fade: grey[500]
@@ -64,30 +106,14 @@ export default function ThemedApp(){
         // CssBaseLine: Browser ၇ဲ့ Default css style တွေကို reset လုပ်ပေးတဲ့ MUI ၇ဲ့ Component တစ်ခု ဖြစ်ပါတယ်။ Material design နဲ့ ကိုက်ညီစေမဲ့ တစ်ချို့ default typography and layout styling တွေကို ထည့်ထားပါတယ်။
         <ThemeProvider theme={theme}>
             <AppContext.Provider value={{ 
-                    showForm, 
-                    setShowForm, 
-                    mode, 
-                    setMode,
-                    showDrawer,
-                    setShowDrawer,
-                    auth,
-                    setAuth,
-                    globalMsg,
-                    setGlobalMsg
+                    showDrawer, setShowDrawer,
+                    showForm, setShowForm,
+                    globalMsg, setGlobalMsg,
+                    mode, setMode,
+                    auth, setAuth,
                 }}
             >
-                <App />
-                <AppDrawer />
-                <Snackbar 
-                    anchorOrigin={{
-                        horizontal: "center",
-                        vertical: "bottom"
-                    }}
-                    open={Boolean(globalMsg)}
-                    autoHideDuration={3000}
-                    onClose={() => setGlobalMsg(null)}
-                    message={globalMsg}
-                />
+                <RouterProvider router={router} />
                 <CssBaseline />
             </AppContext.Provider>
         </ThemeProvider>
