@@ -1,83 +1,54 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 
-import Item from "./Item";
-import List from "./List";
-import Form from "./Form";
-import { AppContext } from "./ThemedApp";
+import Item from "./components/Item";
+import Form from "./components/Form";
+import { useApp } from "./ThemedApp";
+import { Box, Container } from "@mui/material";
+import Header from "./components/Header";
 
 export default function App() {
-    const { mode, setMode } = useContext(AppContext)
+    // AppContext ထဲက shared data တွေကို access လုပ်ဖို့အတွက်ခေါ်ယူခြင်း
+    const { showForm, setGlobalMsg } = useApp();
 
+    // React useState() hooks ကို အသုံးပြုပြီး state data တစ်ခုဖန်တီးခြင်း
+    // data က current state ဖြစ်ပြီးတော့ setData ကတော့ state ကို update လိုပ်နိုင်မဲ့ function ဖြစ်ပါတယ်။
     const [data, setData] = useState([
-        { id: 1, content: "Hello, World!", name: "Alice" },
-        { id: 2, content: "React is fun.", name: "Bob" },
         { id: 3, content: "Yay, interesting.", name: "Chris" },
+        { id: 2, content: "React is fun.", name: "Bob" },
+        { id: 1, content: "Hello, World!", name: "Alice" },
     ])
-    // Form ကို ပြ/မပြသတ်မှတ်မဲ့ state variable
-    const [showForm, setShowForm] = useState(false);
+
     const remove = id => {
         setData(data.filter(item => item.id !== id))
+        setGlobalMsg("An item deleted.");
     }
     const add = (content, name) => {
-        const id = data[data.length-1].id + 1;
-        setData([...data, { id, content, name}])
+        const id = data[0] ? data[0].id + 1 : 1;
+        setData([{ id, content, name}, ...data])
+        setGlobalMsg("An item added.");
     }
     return (
-        <div 
-            style={{
-                minHeight: 1500,
-                background: mode === "dark" ? "black": "white",
-                color: mode === "dark" ? "white" : "black",
-                paddingTop: 20
-            }}>
-            <div style={{maxWidth: 600, margin: "20px auto"}}>
-                <h1 style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center"
-                }}>
-                    Yaycha
-                    <div>
-
-                        <button 
-                            onClick={() => setShowForm(!showForm)}
-                            style={{
-                                width: 32,
-                                height: 32,
-                                borderRadius: 50,
-                                border: "0 none",
-                                background: showForm ? "#dc3545" : "#0d6efd",
-                                color: "white"
-                            }}
-                        >
-                            {showForm ? "x" : "+"}
-                        </button>
-                        <button
-                            onClick={() => setMode(mode === "dark" ? "light" : "dark")}
-                            style={{
-                                marginLeft: 8,
-                                padding: "0 20px",
-                                height: 32,
-                                borderRadius: 32,
-                                border: "0 none",
-                                background: mode === "dark" ? "#333" : "#ddd",
-                                color: mode === "dark" ? "white" : "black"
-                            }}
-                        >
-                            { mode === "dark" ? "Light" : "Dark" }
-                        </button>
-                    </div>
-                </h1>
+        // Box: Container တစ်ခုပါ။ Layout တွေကို လွယ်ကူစွာ ဖန်တီးနိုင်မဲ့ MUI versatile wrapper component တစ်ခု ဖြစ်ပါတယ်။
+        // Container: အပြောင်းအလဲမ၇ှိတဲ့ Width, Spacing နဲ့ Content တွေကို wrap လုပ်တဲ့ နေ၇ာမှာ သုံးတဲ့ MUI Component တစ်ခု ဖြစ်ပါတယ်။ Layout တွေကို Responsive ဖြစ်ပြီးတော့ center ကျစေပါတယ်။ Smaller screen တွေ အတွက် Width ကို auto adjust လုပ်ပေးပါတယ်
+        <Box>
+            <Header />
+            <Container
+                maxWidth = "sm"
+                sx={{ mt:4 }}
+            >
                 { showForm && <Form add={add} /> }
-                <List>
-                    {
-                        data.map(item => (
-                                <Item key={item.id} item={item} remove={remove}/>
-                            )
-                        )
-                    }
-                </List>
-            </div>
-        </div>
+
+                { data.map(item => {
+                    return (
+                        <Item 
+                            key={item.id}
+                            item={item}
+                            remove={remove}
+                        />
+                    )
+                }) }
+
+            </Container>
+        </Box>
     )
 } 
